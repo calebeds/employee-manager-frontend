@@ -28,6 +28,8 @@
         class="form-control mr-sm-2"
         placeholder="Search employees..."
         required
+        #key="ngModel"
+        (ngModelChange)="searchEmployees(key.value)"
       />
     </form>
   </div>

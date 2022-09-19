@@ -1,8 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Employee } from './interfaces/employee';
 import { EmployeeService } from './services/employee/employee.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +13,7 @@ import { EmployeeService } from './services/employee/employee.service';
 })
 export class AppComponent implements OnInit {
   public employees: Employee[] = [];
+  public allEmployees: Employee[] = [];
   public selectedEmployee: Employee = {} as Employee;
 
   constructor(private employeeService: EmployeeService) {}
@@ -20,14 +23,18 @@ export class AppComponent implements OnInit {
   }
 
   public getEmployees(): void {
-    this.employeeService.getEmployees().subscribe(
-      (response: Employee[]) => {
-        this.employees = response;
-      },
-      (error: HttpErrorResponse) => {
-        console.log(error.message);
-      }
-    );
+    this.employeeService
+      .getEmployees()
+      .pipe()
+      .subscribe(
+        (response: Employee[]) => {
+          this.employees = response;
+          this.allEmployees = response;
+        },
+        (error: HttpErrorResponse) => {
+          console.log(error.message);
+        }
+      );
   }
 
   public onOpenModal(mode: string, employee: Employee = {} as Employee): void {
@@ -80,5 +87,29 @@ export class AppComponent implements OnInit {
         console.error(error.message);
       }
     );
+  }
+
+  public searchEmployees(key: string): void {
+    this.employees = this.allEmployees;
+
+    this.employees = [...this.employees].filter((employee) => {
+      const matchEmployeeName =
+        employee.name.toLowerCase().indexOf(key.toLowerCase()) !== -1;
+      const matchEmployeeEmail =
+        employee.email.toLowerCase().indexOf(key.toLowerCase()) !== -1;
+      const matchEmployeePhone =
+        employee.phone.toLowerCase().indexOf(key.toLowerCase()) !== -1;
+      const matchEmployeeJobTitle =
+        employee.jobTitle.toLowerCase().indexOf(key.toLowerCase()) !== -1;
+
+      return (
+        matchEmployeeName ||
+        matchEmployeeEmail ||
+        matchEmployeePhone ||
+        matchEmployeeJobTitle
+      );
+    });
+
+    if (!key || key === '') this.getEmployees();
   }
 }
