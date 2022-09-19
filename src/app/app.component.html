@@ -14,7 +14,7 @@
   <div class="collapse navbar-collapse" id="navbarColor02">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" (click)="onOpenModal(employees[0], 'add')"
+        <a class="nav-link" (click)="onOpenModal('add')"
           >Add Employee <span class="sr-only">(current)</span></a
         >
       </li>
@@ -66,7 +66,7 @@
               data-placement="top"
               data-toggle="tooltip"
               data-original-title="Edit"
-              (click)="onOpenModal(employee, 'update')"
+              (click)="onOpenModal('update', employee)"
               ><i class="fa fa-pencil"></i>
             </a>
             <a
@@ -75,7 +75,7 @@
               data-placement="top"
               data-toggle="tooltip"
               data-original-title="Delete"
-              (click)="onOpenModal(employee, 'delete')"
+              (click)="onOpenModal('delete', employee)"
               ><i class="fa fa-times"></i
             ></a>
           </div>
@@ -143,7 +143,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form>
+        <form #editForm="ngForm">
           <div class="form-group">
             <label for="name">Name</label>
             <input
@@ -153,6 +153,7 @@
               id="name"
               aria-describedby="emailHelp"
               placeholder="Name"
+              [ngModel]="editEmployee.name"
             />
           </div>
           <input
@@ -160,14 +161,14 @@
             name="id"
             class="form-control"
             id="id"
-            placeholder="Email"
+            [ngModel]="editEmployee.id"
           />
           <input
             type="hidden"
             name="userCode"
             class="form-control"
             id="userCode"
-            placeholder="Email"
+            [ngModel]="editEmployee.employeeCode"
           />
           <div class="form-group">
             <label for="email">Email Address</label>
@@ -177,6 +178,7 @@
               class="form-control"
               id="email"
               placeholder="Email"
+              [ngModel]="editEmployee.email"
             />
           </div>
           <div class="form-group">
@@ -187,6 +189,7 @@
               class="form-control"
               id="jobTitle"
               placeholder="Job title"
+              [ngModel]="editEmployee.jobTitle"
             />
           </div>
           <div class="form-group">
@@ -198,6 +201,7 @@
               id="phone"
               name="phone"
               placeholder="Phone"
+              [ngModel]="editEmployee.phone"
             />
           </div>
           <div class="form-group">
@@ -208,6 +212,7 @@
               class="form-control"
               id="imageUrl"
               placeholder="Image URL"
+              [ngModel]="editEmployee.imageUrl"
             />
           </div>
           <div class="modal-footer">
@@ -218,7 +223,11 @@
             >
               Close
             </button>
-            <button data-dismiss="modal" class="btn btn-primary">
+            <button
+              data-dismiss="modal"
+              class="btn btn-primary"
+              (click)="onUpdateEmployee(editForm.value)"
+            >
               Save changes
             </button>
           </div>
@@ -286,13 +295,14 @@
         </button>
       </div>
       <div class="modal-body">
-        <form>
+        <form #addForm="ngForm" (ngSubmit)="onAddEmployee(addForm)">
           <div class="form-group">
             <label for="name">Name</label>
             <input
-              type="text"
-              name="name"
               ngModel
+              type="text"
+              ngModel
+              name="name"
               class="form-control"
               id="name"
               placeholder="Name"
@@ -356,7 +366,13 @@
             >
               Close
             </button>
-            <button type="submit" class="btn btn-primary">Save changes</button>
+            <button
+              [disabled]="addForm.invalid"
+              type="submit"
+              class="btn btn-primary"
+            >
+              Add Employee
+            </button>
           </div>
         </form>
       </div>
