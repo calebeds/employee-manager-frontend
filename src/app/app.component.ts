@@ -11,7 +11,7 @@ import { EmployeeService } from './services/employee/employee.service';
 })
 export class AppComponent implements OnInit {
   public employees: Employee[] = [];
-  public editEmployee: Employee = {} as Employee;
+  public selectedEmployee: Employee = {} as Employee;
 
   constructor(private employeeService: EmployeeService) {}
 
@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
   }
 
   public onOpenModal(mode: string, employee: Employee = {} as Employee): void {
-    this.editEmployee = employee;
+    this.selectedEmployee = employee;
     const container = document.getElementById('main-container');
     const button = document.createElement('button');
     button.type = 'button';
@@ -62,6 +62,18 @@ export class AppComponent implements OnInit {
     this.employeeService.updateEmployee(employee).subscribe(
       (response: Employee) => {
         console.log(response);
+        this.getEmployees();
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error.message);
+      }
+    );
+  }
+
+  public onDeleteEmployee(employeeId: number): void {
+    this.employeeService.deleteEmployee(employeeId).subscribe(
+      (res: void) => {
+        console.log(res);
         this.getEmployees();
       },
       (error: HttpErrorResponse) => {
